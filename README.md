@@ -46,7 +46,10 @@ make install        # /usr/local/bin/testpick
 ```
 
 Release tarballs (linux-amd64, linux-arm64) are built with `make
-release`; verify them with `SHA256SUMS.txt`.
+release`; verify them with `SHA256SUMS.txt`. Release builds are
+reproducible: binaries are built with `-buildvcs=false` (no VCS stamp)
+and tarballs use sorted entries with a fixed timestamp, so rebuilding
+from the same code produces identical hashes.
 
 ## Commands
 
