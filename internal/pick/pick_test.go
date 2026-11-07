@@ -171,6 +171,22 @@ func TestSelectUnmappedFailSafeNone(t *testing.T) {
 	}
 }
 
+func TestSelectReasonPluralization(t *testing.T) {
+	ch, _ := ParseDiff([]byte("+++ b/src/a.py\n@@ -9,0 +10,3 @@\n+x\n+y\n+z\n"))
+	cov := []CoverageEntry{
+		covEntry("tests/test_a.py::test_x", []string{"src/a.py"}, []int{10}),
+		covEntry("tests/test_b.py::test_y", []string{"src/a.py"}, []int{11}),
+	}
+	sel := Select(ch, cov, FailSafeAll)
+	if sel.Reason != "2 tests selected for 1 changed file" {
+		t.Errorf("reason = %q, want %q", sel.Reason, "2 tests selected for 1 changed file")
+	}
+	one := Select(ch, cov[:1], FailSafeAll)
+	if one.Reason != "1 test selected for 1 changed file" {
+		t.Errorf("reason = %q, want %q", one.Reason, "1 test selected for 1 changed file")
+	}
+}
+
 func TestSelectSortedAndDeduped(t *testing.T) {
 	ch, _ := ParseDiff([]byte("+++ b/src/a.py\n@@ -9,0 +10,3 @@\n+x\n+y\n+z\n"))
 	cov := []CoverageEntry{

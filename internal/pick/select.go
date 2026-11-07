@@ -102,11 +102,14 @@ func Select(ch *Change, cov []CoverageEntry, failSafe string) Selection {
 			sort.Strings(sel)
 		}
 	case len(sel) > 0:
-		if len(sel) == 1 && len(changed) == 1 {
-			reason = "1 test selected for 1 changed file"
-		} else {
-			reason = fmt.Sprintf("%d tests selected for %d changed files", len(sel), len(changed))
+		testWord, fileWord := "tests", "files"
+		if len(sel) == 1 {
+			testWord = "test"
 		}
+		if len(changed) == 1 {
+			fileWord = "file"
+		}
+		reason = fmt.Sprintf("%d %s selected for %d changed %s", len(sel), testWord, len(changed), fileWord)
 	case len(changed) == 0:
 		reason = "no changed files"
 	default:
