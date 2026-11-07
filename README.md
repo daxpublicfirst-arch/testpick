@@ -10,6 +10,42 @@ no network, no model calls, no daemon. A harness may wrap it with a thin
 adapter; the tool itself knows nothing about any harness. See
 `plugin.toml` (`protocol = "arabica-plugin-v1"`).
 
+## Docs
+
+- [docs/DESIGN.md](docs/DESIGN.md) — what testpick is for, who uses it, inputs/outputs, and what it deliberately does not do.
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — layout, data flow, components, determinism, failure handling.
+- [docs/DECISIONS.md](docs/DECISIONS.md) — decision log: every choice, the alternatives, and the trade-off.
+- [docs/RESEARCH.md](docs/RESEARCH.md) — prior art (regression test selection, testmon, vitest, QEMU) and what it changed here.
+- [docs/TESTING.md](docs/TESTING.md) — how to verify the tool, measured numbers, and what is still not verified.
+- [docs/CI.md](docs/CI.md) — the CI workflow, and why it is not on `main` yet (the GitHub App cannot push `.github/workflows/`).
+
+## Verification
+
+Verified from clean clones with a fresh Go 1.23.4 toolchain
+(`GOPROXY=off`, empty caches). Full detail in
+[docs/TESTING.md](docs/TESTING.md); the short version:
+
+- `go test ./...`: 14 unit tests in `internal/pick` (80.0% coverage)
+  and 13 in `cmd/testpick` (74.9% coverage) — all pass.
+- `--self-test`: 5/5 fixture cases. `doctor`: 4/4 checks.
+- End-to-end with a real `git diff`: selects exactly the tests
+  covering the changed lines; error cases exit 2 with the documented
+  codes; empty diff and unmapped + `--fail-safe none` exit 1.
+- **Performance** (5,000 tests / 200 files / 20 changed files):
+  `select` takes ~0.22 s end to end; a 205 MiB diff is rejected with
+  `INPUT_TOO_LARGE` in 0.55 s. Both far under the 30 s harness limit.
+  Run it yourself: `python3 scripts/gen_perf_input.py --binary ./bin/testpick`.
+- **ARM64 runs for real** under `qemu-aarch64-static` 8.2.2
+  (`make test-arm64`): `version`, `doctor` (reports `linux/arm64`),
+  `select`, and `self-test` (5/5) all pass.
+- **Mock harness** (`python3 examples/mock-harness.py`): 17/17
+  checks pass — it calls the CLI the way an adapter would and
+  validates every promise in `plugin.toml` and `schema/`.
+
+Not verified: real ARM hardware (QEMU only), the real Arabica harness
+(the mock checks the contract), and 30 s timeout enforcement (that is
+harness-side by design).
+
 ## Example
 
 ```sh
@@ -207,10 +243,16 @@ gofmt -l .           # formatting (must be empty)
 make self-test       # fixture end-to-end checks
 make doctor          # runtime checks
 make release         # static linux-amd64/arm64 binaries + tarballs + SHA256SUMS.txt
+make test-arm64      # run the ARM64 binary under qemu-aarch64-static
+python3 examples/mock-harness.py --binary ./bin/testpick --root .
+python3 scripts/gen_perf_input.py --binary ./bin/testpick --out /tmp/perf
 ```
 
 CI (`.github/workflows/ci.yml`) runs `go test`, `--self-test`, and
-`doctor` on every push to `main`.
+`doctor` on every push to `main`. The workflow file itself is not on
+`main` yet — the GitHub App cannot push `.github/workflows/` (403, no
+`workflows` permission) — so a copy is kept at `docs/ci.yml` with
+install instructions in [docs/CI.md](docs/CI.md).
 
 ## License
 
