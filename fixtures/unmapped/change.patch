@@ -1,0 +1,6 @@
+diff --git a/src/c.py b/src/c.py
+--- a/src/c.py
++++ b/src/c.py
+@@ -4,0 +5,2 @@
++def other_feature():
++    return 7

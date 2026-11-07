@@ -1,0 +1,1 @@
+{"fail_safe":"all","ok":true,"reason":"1 test selected for 1 changed file","selected":["tests/test_a.py::test_x"],"tool":"testpick","unmapped":[],"version":"0.1.0"}

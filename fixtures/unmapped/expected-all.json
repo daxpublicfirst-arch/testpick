@@ -1,0 +1,1 @@
+{"fail_safe":"all","ok":true,"reason":"1 changed file has no coverage","selected":["tests/test_a.py::test_x","tests/test_b.py::test_y"],"tool":"testpick","unmapped":["src/c.py"],"version":"0.1.0"}
