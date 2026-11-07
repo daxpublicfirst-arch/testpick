@@ -1,0 +1,12 @@
+name = "testpick"
+version = "0.1.0"
+kind = "cli"
+entry = "bin/testpick"
+protocol = "arabica-plugin-v1"
+commands = ["select", "record", "self-test", "doctor", "version"]
+about = "Select tests from a diff and a per-test coverage map, and record a missed test."
+example = "testpick select --diff change.patch --coverage coverage/ --out ./out --json"
+permissions = { read = ["--diff", "--coverage"], write = ["--out"], network = false }
+limits = { input_mb = 200, timeout_s = 30 }
+license = "MIT"
+source = "https://github.com/daxpublicfirst-arch/testpick"
