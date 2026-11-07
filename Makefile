@@ -35,6 +35,14 @@ self-test: build
 doctor: build
 	./bin/$(BINARY) doctor
 
+# test-arm64: run the ARM64 binary under QEMU user-mode emulation.
+# self-test re-executes the binary, so it needs TESTPICK_SELFTEST_RUNNER
+# because the x86_64 host kernel cannot exec an ARM64 binary directly.
+test-arm64: release
+	./dist/$(BINARY)-linux-arm64 version
+	TESTPICK_FIXTURES=$(CURDIR)/fixtures qemu-aarch64-static ./dist/$(BINARY)-linux-arm64 doctor
+	TESTPICK_FIXTURES=$(CURDIR)/fixtures TESTPICK_SELFTEST_RUNNER=qemu-aarch64-static qemu-aarch64-static ./dist/$(BINARY)-linux-arm64 self-test
+
 # Release: static binaries for linux-amd64 and linux-arm64, a tarball per
 # arch, and a SHA256SUMS file. Binaries are static (CGO_ENABLED=0).
 release: clean

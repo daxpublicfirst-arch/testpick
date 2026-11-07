@@ -351,6 +351,26 @@ func TestRunRequestEnvelope(t *testing.T) {
 	}
 }
 
+func TestSelfTestCommandRunner(t *testing.T) {
+	t.Setenv("TESTPICK_SELFTEST_RUNNER", "qemu-aarch64-static")
+	cmd := selfTestCommand("/bin/testpick", "select", "--json")
+	want := []string{"qemu-aarch64-static", "/bin/testpick", "select", "--json"}
+	if len(cmd.Args) != len(want) {
+		t.Fatalf("args = %v, want %v", cmd.Args, want)
+	}
+	for i := range want {
+		if cmd.Args[i] != want[i] {
+			t.Errorf("args = %v, want %v", cmd.Args, want)
+		}
+	}
+	// Without the runner env, the binary is invoked directly.
+	t.Setenv("TESTPICK_SELFTEST_RUNNER", "")
+	cmd = selfTestCommand("/bin/testpick", "version")
+	if len(cmd.Args) != 2 || cmd.Args[0] != "/bin/testpick" || cmd.Args[1] != "version" {
+		t.Errorf("args = %v, want [/bin/testpick version]", cmd.Args)
+	}
+}
+
 func TestCompareSelection(t *testing.T) {
 	want := map[string]any{
 		"ok": true, "tool": "testpick", "version": "0.1.0",

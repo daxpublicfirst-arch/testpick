@@ -468,7 +468,29 @@ func runDoctor(flags map[string]string) (int, int64, int, bool) {
 	return 0, 0, n, true
 }
 
-// selfTestCase is one fixture case checked by --self-test.
+// selfTestRunner returns the command prefix for the subprocesses
+// --self-test spawns. Normally the binary re-executes itself, but under
+// cross-architecture emulation (for example qemu-aarch64-static on an
+// x86_64 host without binfmt_misc) the host kernel cannot exec the
+// binary directly. Setting TESTPICK_SELFTEST_RUNNER to a command (for
+// example "qemu-aarch64-static") runs each case as
+// "<runner> <binary> <args...>".
+func selfTestRunner() []string {
+	runner := strings.TrimSpace(os.Getenv("TESTPICK_SELFTEST_RUNNER"))
+	if runner == "" {
+		return nil
+	}
+	return strings.Fields(runner)
+}
+
+// selfTestCommand builds the exec.Cmd for one self-test case.
+func selfTestCommand(exe string, args ...string) *exec.Cmd {
+	if prefix := selfTestRunner(); len(prefix) > 0 {
+		return exec.Command(prefix[0], append(append([]string{}, prefix[1:]...), append([]string{exe}, args...)...)...)
+	}
+	return exec.Command(exe, args...)
+}
+
 type selfTestCase struct {
 	Name string `json:"name"`
 	OK   bool   `json:"ok"`
@@ -506,7 +528,7 @@ func runSelfTest(flags map[string]string) (int, int64, int, bool) {
 		}
 		defer os.RemoveAll(tmp)
 		outDir := filepath.Join(tmp, "out")
-		cmd := exec.Command(exe, "select",
+		cmd := selfTestCommand(exe, "select",
 			"--diff", filepath.Join(fixtures, sc.fixture, "change.patch"),
 			"--coverage", filepath.Join(fixtures, sc.fixture, "coverage"),
 			"--out", outDir, "--fail-safe", sc.failSafe, "--json")
@@ -564,7 +586,7 @@ func runSelfTest(flags map[string]string) (int, int64, int, bool) {
 		} else {
 			defer os.RemoveAll(tmp)
 			outDir := filepath.Join(tmp, "out")
-			cmd := exec.Command(exe, "record", "--missed", "tests/test_a.py::test_y", "--out", outDir, "--json")
+			cmd := selfTestCommand(exe, "record", "--missed", "tests/test_a.py::test_y", "--out", outDir, "--json")
 			var stdout, stderr bytes.Buffer
 			cmd.Stdout, cmd.Stderr = &stdout, &stderr
 			if err := cmd.Run(); err != nil {
