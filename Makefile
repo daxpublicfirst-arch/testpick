@@ -39,7 +39,7 @@ doctor: build
 # self-test re-executes the binary, so it needs TESTPICK_SELFTEST_RUNNER
 # because the x86_64 host kernel cannot exec an ARM64 binary directly.
 test-arm64: release
-	./dist/$(BINARY)-linux-arm64 version
+	qemu-aarch64-static ./dist/$(BINARY)-linux-arm64 version
 	TESTPICK_FIXTURES=$(CURDIR)/fixtures qemu-aarch64-static ./dist/$(BINARY)-linux-arm64 doctor
 	TESTPICK_FIXTURES=$(CURDIR)/fixtures TESTPICK_SELFTEST_RUNNER=qemu-aarch64-static qemu-aarch64-static ./dist/$(BINARY)-linux-arm64 self-test
 

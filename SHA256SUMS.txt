@@ -1,4 +1,4 @@
-303c4c814037fe8a3a315df02bf9ae3336103079837e0fe2f54d7b9dfe74cec8  testpick-0.1.0-linux-amd64.tar.gz
-13b7632b70a4810cb11032d8baa0009b130546dfa66fefc413349ac2a4954d8a  testpick-0.1.0-linux-arm64.tar.gz
-cadba1d0d75f93de754332993cc21a9fa98d27eaca0fb1587fae515dbbf4f126  testpick-linux-amd64
-ab05725cb8437523032ca41fd050e4fea4b2c254249aaf677ef2c44023a38865  testpick-linux-arm64
+e4cdc9c01868ed8d9244557af083bcc12f9c8c88c4c4e72f5029c53c5a075b0a  testpick-0.1.0-linux-amd64.tar.gz
+815d72c21bd20382b82a4c7084d4a42f2ddfd0307262014cd02ec02358c843f7  testpick-0.1.0-linux-arm64.tar.gz
+9ad6a7343f5059e3acc5f182a61d996866dc3db4d24fa0274fc2dbc3dae84b46  testpick-linux-amd64
+1fe13f4b384c59a6221f241a7c5da0c3dbdb09e732dc3c3f6f2087c917efaedc  testpick-linux-arm64
