@@ -1,0 +1,4 @@
+a39d865d3f7b6cd5849c78a623bca404f8ebb8d81c19aa8673e17ca7836a5234  testpick-0.1.0-linux-amd64.tar.gz
+62067f183f2acfa325e4f2d628aaeaa322dce25dc6df45c9a9dc94c3500b3559  testpick-0.1.0-linux-arm64.tar.gz
+84bb05f994b46d4cf50f8df4e7ddd8e3c5a03e31dc536b84e2ac126f51bff4dd  testpick-linux-amd64
+65d5056ffdffe3b3b73497fef2308b4d2714e55636b6a0981ce202e2b1fb1e14  testpick-linux-arm64
