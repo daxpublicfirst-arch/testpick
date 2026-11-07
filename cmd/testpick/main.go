@@ -35,6 +35,11 @@ import (
 // diff plus coverage inputs combined.
 const maxInputBytes = 200 << 20
 
+// osExecutable locates the running binary. It is a variable (not a direct
+// os.Executable call) so tests can point self-test and doctor at a built
+// binary instead of the test binary.
+var osExecutable = os.Executable
+
 // resolvedCommand is the command run() settled on, including one read
 // from a --request envelope. main() uses it for the telemetry line.
 var resolvedCommand string
@@ -416,7 +421,7 @@ type doctorCheck struct {
 
 func runDoctor(flags map[string]string) (int, int64, int, bool) {
 	checks := []doctorCheck{}
-	exe, err := os.Executable()
+	exe, err := osExecutable()
 	if err != nil {
 		checks = append(checks, doctorCheck{"executable", false, fmt.Sprintf("cannot locate own binary: %v", err)})
 	} else {
@@ -475,7 +480,7 @@ func runSelfTest(flags map[string]string) (int, int64, int, bool) {
 	if err != nil {
 		return fail(err, 3)
 	}
-	exe, err := os.Executable()
+	exe, err := osExecutable()
 	if err != nil {
 		return fail(err, 3)
 	}
@@ -650,7 +655,7 @@ func findFixtures() (string, error) {
 	if env := os.Getenv("TESTPICK_FIXTURES"); env != "" {
 		candidates = append(candidates, env)
 	}
-	if exe, err := os.Executable(); err == nil {
+	if exe, err := osExecutable(); err == nil {
 		dir := filepath.Dir(exe)
 		candidates = append(candidates,
 			filepath.Join(dir, "fixtures"),
